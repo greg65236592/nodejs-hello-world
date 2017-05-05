@@ -2,3 +2,6 @@
 .vscode/
 # node modules
 node_modules/
+
+# test files
+test_output/
