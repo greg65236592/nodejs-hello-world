@@ -1,7 +1,7 @@
 var fs = require('fs');
 var common = require('./common.js');
 /**
- * Copy a file using stream
+ * Copy a file using stream (bad practice, you can use pipe)
  */
 common.createTestOutputDir();
 var readerCopyStream = fs.createReadStream('input.txt');

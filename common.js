@@ -5,3 +5,5 @@ exports.createTestOutputDir = function createTestOutputDir() {
     mkdirp.sync(testOutputDir);
     return testOutputDir;
 }
+
+exports.testOutputDir = testOutputDir;
