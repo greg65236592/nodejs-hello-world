@@ -1,10 +1,13 @@
 /**
- * Use promise to solve recursive problem
+ * Use promise to solve recursive problem, also tried to use v8-profiler for monitor memory leak.
  */
-
+require('v8-profiler');
 var fs = require("fs");
 var testFilePath = '/Users/greg/Documents/wildfly-10.0.0.Final/standalone/log/server.log.2016-12-26';
 // var testFilePath = 'readFileTest.txt';
+
+//Detecting memory leak.
+var leaks = [];
 
 fs.open(testFilePath, 'r+', function (err, fd) {
     if (err) {
@@ -17,9 +20,7 @@ fs.open(testFilePath, 'r+', function (err, fd) {
     var position = 0;
     console.log("File bytes:" + fileSizeInBytes);
 
-    //while (fileSizeInBytes > position) {
     readWithPromise(fd, fileSizeInBytes, 0);
-    //}
 
 });
 
@@ -27,6 +28,7 @@ function readWithPromise(fd, fileSizeInBytes, position) {
     var promise = new Promise(function (resolve, reject) {
 
         var buf = new Buffer(10000);
+        leaks.push(buf);
 
         fs.read(fd, buf, 0, buf.length, position, function (err, bytes) {
             if (err) {
@@ -36,7 +38,7 @@ function readWithPromise(fd, fileSizeInBytes, position) {
 
             // Print only read bytes to avoid junk.
             if (bytes > 0) {
-                console.log('---' + buf.slice(0, bytes).toString());
+                console.log('---' + buf.toString());
             }
 
             if (fileSizeInBytes < position) {

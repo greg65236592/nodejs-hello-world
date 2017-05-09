@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "v8-profiler": "^5.7.0"
   }
 }
