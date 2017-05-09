@@ -26,7 +26,7 @@ fs.open(testFilePath, 'r+', function (err, fd) {
 function readWithPromise(fd, fileSizeInBytes, position) {
     var promise = new Promise(function (resolve, reject) {
 
-        var buf = new Buffer(100);
+        var buf = new Buffer(10000);
 
         fs.read(fd, buf, 0, buf.length, position, function (err, bytes) {
             if (err) {
@@ -39,12 +39,6 @@ function readWithPromise(fd, fileSizeInBytes, position) {
                 console.log('---' + buf.slice(0, bytes).toString());
             }
 
-            position += buf.length;
-
-            // free memory
-            buf = null;
-
-            resolve(position);
             if (fileSizeInBytes < position) {
                 // Close the opened file.
                 fs.close(fd, function (err) {
@@ -52,13 +46,27 @@ function readWithPromise(fd, fileSizeInBytes, position) {
                         console.log(err);
                     }
                     console.log("File closed successfully.");
+                    return;
                 });
             }
+
+            //Update position
+            position += buf.length;
+
+            // free memory, assign null seens to be useless. Fill null value save me almost 50% memeory (500MB -> 250MB, test file size 286MB)
+            buf.fill(null);
+
+            // Pass to resolve
+            resolve(position);
+            
         });
 
     });
-    promise.then(function (res) {
-        console.log('Promise res: ' + res);
-        readWithPromise(fd, fileSizeInBytes, res);
-    });
+    // Go recursive if not ended
+    if (fileSizeInBytes > position) {
+        promise.then(function (res) {
+            console.log('Promise res: ' + res);
+            readWithPromise(fd, fileSizeInBytes, res);
+        });
+    }
 }
