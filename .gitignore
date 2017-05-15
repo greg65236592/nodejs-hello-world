@@ -5,3 +5,5 @@ node_modules/
 
 # test files
 test_output/
+test_upload/
+tmp/
